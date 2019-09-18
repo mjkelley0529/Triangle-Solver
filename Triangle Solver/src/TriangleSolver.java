@@ -3,6 +3,8 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.KeyEvent;
 import java.awt.event.KeyListener;
+import java.util.ArrayList;
+import java.util.Comparator;
 
 import javax.swing.JButton;
 import javax.swing.JFrame;
@@ -71,6 +73,7 @@ public class TriangleSolver extends JFrame implements ActionListener {
 			spacers[i]=new JPanel();
 			spacers[i].setFocusable(false);
 		}
+		reset.addActionListener(this);
 		for(int i=0;i<8;i++)
 			pane.add(spacers[i]);
 		pane.add(displays[0]);
@@ -92,15 +95,35 @@ public class TriangleSolver extends JFrame implements ActionListener {
 		pane.add(spacers[14]);
 		pane.add(displays[5]);
 		pane.add(inputs[5]);
-		for(int i=15;i<22;i++)
+		for(int i=15;i<21;i++)
 			pane.add(spacers[i]);
-		
+		pane.add(reset);
+		pane.add(spacers[21]);
+
 		add(pane);
 		setVisible(true);
 	}//init
 	private void runLogic() {
+		for(JTextArea i:inputs)
+			i.setEditable(false);
 		logicRan=true;
 	}//runLogic
+	private void reset() {
+		logicRan=false;
+		for(int i=0;i<inputs.length;i++) {
+			inputs[i].setText("0");
+			inputBool[i]=false;
+			inputs[i].setEditable(true);
+		}//for
+	}//reset
+	private double[] sort(double[]inputNums) {
+		ArrayList<Double> outputNums=new ArrayList<Double>();
+		for(double i:inputNums)
+			outputNums.add(i);
+		outputNums.sort(Comparator.naturalOrder());
+		double[] returnNums={outputNums.get(0),outputNums.get(1),outputNums.get(2)};
+		return returnNums;
+	}
 	public static void main(String[]args) {
 		new TriangleSolver();
 	}//main
@@ -152,24 +175,40 @@ public class TriangleSolver extends JFrame implements ActionListener {
 		return returnValue;
 	}//intCheck(char)
 	private boolean logicRunnable() {
-		boolean returnValue=false;
+		boolean returnValue;
 		int trueCount=0;
 		for(boolean i:inputBool)
 			if(i)
 				trueCount++;
-		if(trueCount==3)
+		if(trueCount==3&&!(inputBool[3]&&inputBool[4]&&inputBool[5])) {
 			returnValue=true;
+		} else if (inputBool[3]&&inputBool[4]&&inputBool[5]) {
+			double inputNums[]= {Double.parseDouble(inputs[3].getText()),Double.parseDouble(inputs[4].getText()),Double.parseDouble(inputs[5].getText())};
+			if(inputNums[0]+inputNums[1]+inputNums[2]==180) {
+				returnValue=true;
+			} else {
+				returnValue=false;
+				System.err.println("Angles do not equal 180 degrees.");
+			}
+		} else if (inputBool[0]&&inputBool[1]&&inputBool[2]) {
+			double inputNums[]= {Double.parseDouble(inputs[0].getText()),Double.parseDouble(inputs[1].getText()),Double.parseDouble(inputs[2].getText())};
+			double sortedNums[]=sort(inputNums);
+			if(sortedNums[2]>sortedNums[0]+sortedNums[1]) {
+				returnValue=true;
+			} else {
+				returnValue=false;
+				System.err.println("Given side lengths cannot form a triange.");
+			}
+		} else {
+			returnValue=false;
+		}
 		return returnValue;
 	}//logicRunnable
 
 	//Inherited Methods
 	public void actionPerformed(ActionEvent evt) {
 		if(evt.getSource()==reset) {
-			logicRan=false;
-			for(int i=0;i<inputs.length;i++) {
-				inputs[i].setText("0");
-				inputBool[i]=false;
-			}//for
+			reset();
 		}//if
 	}//actionPerformed
 }//class
