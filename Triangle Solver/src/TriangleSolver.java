@@ -91,6 +91,47 @@ public class TriangleSolver extends JFrame implements ActionListener, KeyListene
 	}//init
 	private void runLogic() {
 		//Will run the logic for solving the Triangle.
+		double[] inputSides=new double[3], inputAngles=new double[3], outputSides=new double[3], outputAngles=new double[3];
+		for(int i=0;i<inputs.length;i+=2) {
+			if(inputBool[i]) {
+				inputSides[i/2]=Double.parseDouble(inputs[i].getText());
+			} else {
+				inputSides[i/2]=0;
+			}
+		}
+		for(int i=1;i<inputs.length;i+=2) {
+			if(inputBool[i]) {
+				inputAngles[i/2]=Double.parseDouble(inputs[i].getText());
+			} else {
+				inputAngles[i/2]=0;
+			}
+		}
+		boolean a1=inputBool[1], a2=inputBool[3], a3=inputBool[5], s1=inputBool[0], s2=inputBool[2], s3=inputBool[4];
+		boolean aA=a1&&a2&&a3, aS=s1&&s2&&s3; //All Angles, All Sides.
+		boolean a1a2=a1&&a2, a1a3=a1&&a3, a2a3=a2&&a3, s1s2=s1&&s2, s1s3=s1&&s3, s2s3=s2&&s3; //Angle Pairs, Side Pairs
+		boolean al2A=a1a2||a1a3||a2a3, al2S=a1a2||a1a3||a2a3; //At Least 2 Angles, At Least 2 Sides.
+		if(!aA&&al2A) {
+			if(a1a2) {
+				outputAngles[0]=inputAngles[0];
+				outputAngles[1]=inputAngles[1];
+				outputAngles[2]=180-(outputAngles[0]+outputAngles[1]);
+			} else if(a1a3) {
+				outputAngles[0]=inputAngles[0];
+				outputAngles[2]=inputAngles[2];
+				outputAngles[1]=180-(outputAngles[0]+outputAngles[2]);
+			} else if(a2a3) {
+				outputAngles[1]=inputAngles[1];
+				outputAngles[2]=inputAngles[2];
+				outputAngles[0]=180-(outputAngles[1]+outputAngles[2]);
+			}
+		} else if (aA) {
+			for(int i=0;i<inputAngles.length;i++) {
+				outputAngles[i]=inputAngles[i];
+			}
+		}
+		if (!aS&&al2S) {
+			
+		}
 	}//runLogic
 	private void reset() {
 		//Resets the window to where you can input a new triangle.
