@@ -16,7 +16,7 @@ public class TriangleSolver extends JFrame implements ActionListener, KeyListene
 	private static final long serialVersionUID = -4198600644269193361L;
 	private static final int frameH=400, frameW=600;
 	private static final String displayString[]= {"Side A=", "Angle A=", "Side B=","Angle B=","Side C=","Angle C="}, 
-			DEFIN="", TITLE="Triangle Solver", VERID="Pre-Alpha 0.1";
+			DEFAULTINPUT="", TITLE="Triangle Solver", VERSIONID="Pre-Alpha 0.1";
 	//Swing/UI Variables
 	private JTextArea[] inputs = new JTextArea[6], displays=new JTextArea[6];
 	private JButton reset=new JButton("Reset"), enter=new JButton("Run");
@@ -28,9 +28,10 @@ public class TriangleSolver extends JFrame implements ActionListener, KeyListene
 
 	//Functional Methods
 	TriangleSolver(){
+		//Sets up the frame and layout of how the GUI looks.
 		setSize(frameW,frameH);
 		setLocation((1920-frameW)/2,(1080-frameH)/2);
-		setTitle(TITLE+", "+VERID);
+		setTitle(TITLE+", "+VERSIONID);
 		setResizable(false);
 		setDefaultCloseOperation(EXIT_ON_CLOSE);
 
@@ -38,7 +39,7 @@ public class TriangleSolver extends JFrame implements ActionListener, KeyListene
 
 		for(int i=0;i<inputs.length;i++) {
 			inputs[i]=new JTextArea();
-			inputs[i].setText(DEFIN);
+			inputs[i].setText(DEFAULTINPUT);
 			inputs[i].addKeyListener(this);
 		}
 		for(int i=0;i<displays.length;i++) {
@@ -86,19 +87,19 @@ public class TriangleSolver extends JFrame implements ActionListener, KeyListene
 		setVisible(true);
 	}//init
 	private void runLogic() {
-		/*for(JTextArea i:inputs)
-			i.setEditable(false);
-		logicRan=true;*/
+		//Will run the logic for solving the Triangle.
 	}//runLogic
 	private void reset() {
+		//Resets the window to where you can input a new triangle.
 		logicRan=false;
 		for(int i=0;i<inputs.length;i++) {
-			inputs[i].setText(DEFIN);
+			inputs[i].setText(DEFAULTINPUT);
 			inputBool[i]=false;
 			inputs[i].setEditable(true);
 		}//for
 	}//reset
 	private double[] sort(double[]inputNums) {
+		//Sorts a list of Doubles from least to greatest.
 		ArrayList<Double> outputNums=new ArrayList<Double>();
 		for(double i:inputNums)
 			outputNums.add(i);
@@ -111,7 +112,8 @@ public class TriangleSolver extends JFrame implements ActionListener, KeyListene
 	}//main
 
 	//Variable Methods
-	private boolean intCheck(char checkChar) {
+	private boolean intCheck(char checkChar, boolean isString) {
+		//Checks a char to see if its a valid integer.
 		System.err.println(checkChar);
 		boolean returnValue=false;
 		switch(checkChar) {
@@ -127,18 +129,25 @@ public class TriangleSolver extends JFrame implements ActionListener, KeyListene
 		case '0':
 			returnValue=true;
 			break;
+		case '.':
+			if(isString)
+				returnValue=true;
+			else
+				returnValue=false;
+			break;
 		default:
 			returnValue=false;
 		}//switch
 		return returnValue;
 	}//intCheck(char)
 	private boolean intCheck(String checkString) {
+		//Checks a string one char at a time using the prior intCheck method to see if the number in the input is a valid number.
 		boolean returnValue=false;
 		if(checkString.length()==0) {
 			return returnValue;
 		}//if
 		for(int i=0;i<checkString.length();i++) {
-			if(intCheck(checkString.charAt(i))) {
+			if(intCheck(checkString.charAt(i), true)) {
 				returnValue=true;
 			} else {
 				returnValue=false;
@@ -148,6 +157,7 @@ public class TriangleSolver extends JFrame implements ActionListener, KeyListene
 		return returnValue;
 	}//intCheck(String)
 	private boolean logicRunnable() {
+		//Checks to see if their is enough inputs and if those inputs are able to produce a valid triangle.
 		boolean returnValue;
 		int trueCount=0;
 		for(boolean i:inputBool) {
@@ -189,6 +199,7 @@ public class TriangleSolver extends JFrame implements ActionListener, KeyListene
 
 	//Inherited Methods
 	public void actionPerformed(ActionEvent evt) {
+		//Listens for Button Presses
 		if(evt.getSource()==reset) {
 			reset();
 		}
