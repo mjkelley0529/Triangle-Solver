@@ -91,50 +91,70 @@ public class TriangleSolver extends JFrame implements ActionListener, KeyListene
 	}//init
 	private void runLogic() {
 		//Will run the logic for solving the Triangle.
+		//Assigns all inputs to appropriate variable lists.
 		double[] inputSides=new double[3], inputAngles=new double[3], outputSides=new double[3], outputAngles=new double[3];
-		for(int i=0;i<inputs.length;i+=2) {
+		for(int i=0, a=0;i<inputs.length;i+=2, a++) {
 			if(inputBool[i]) {
-				inputSides[i/2]=Double.parseDouble(inputs[i].getText());
+				inputSides[a]=Double.parseDouble(inputs[i].getText());
 			} else {
-				inputSides[i/2]=0;
+				inputSides[a]=0;
 			}
-		}
-		for(int i=1;i<inputs.length;i+=2) {
+		}//for
+		for(int i=1, a=0;i<inputs.length;i+=2, a++) {
 			if(inputBool[i]) {
-				inputAngles[i/2]=Double.parseDouble(inputs[i].getText());
+				inputAngles[a]=Double.parseDouble(inputs[i].getText());
 			} else {
-				inputAngles[i/2]=0;
+				inputAngles[a]=0;
 			}
-		}
+		}//for
 		boolean a1=inputBool[1], a2=inputBool[3], a3=inputBool[5], s1=inputBool[0], s2=inputBool[2], s3=inputBool[4];
 		boolean aA=a1&&a2&&a3, aS=s1&&s2&&s3; //All Angles, All Sides.
 		boolean a1a2=a1&&a2, a1a3=a1&&a3, a2a3=a2&&a3, s1s2=s1&&s2, s1s3=s1&&s3, s2s3=s2&&s3; //Angle Pairs, Side Pairs
 		boolean al2A=a1a2||a1a3||a2a3, al2S=a1a2||a1a3||a2a3; //At Least 2 Angles, At Least 2 Sides.
-		if(!aA&&al2A) {
-			if(a1a2) {
-				outputAngles[0]=inputAngles[0];
-				outputAngles[1]=inputAngles[1];
-				outputAngles[2]=180-(outputAngles[0]+outputAngles[1]);
-			} else if(a1a3) {
-				outputAngles[0]=inputAngles[0];
-				outputAngles[2]=inputAngles[2];
-				outputAngles[1]=180-(outputAngles[0]+outputAngles[2]);
-			} else if(a2a3) {
-				outputAngles[1]=inputAngles[1];
-				outputAngles[2]=inputAngles[2];
-				outputAngles[0]=180-(outputAngles[1]+outputAngles[2]);
-			}
-		} else if (aA) {
-			for(int i=0;i<inputAngles.length;i++) {
-				outputAngles[i]=inputAngles[i];
-			}
-		}
-		if (!aS&&al2S) {
-			
-		}
+		boolean as1=a1&&s1, as2=a2&&s2, as3=a3&&s3;
+		boolean solved=aA&&aS;
+		do {
+			//Easy Cases
+			if(!aA&&al2A) {
+				if(a1a2) {
+					outputAngles[0]=inputAngles[0];
+					outputAngles[1]=inputAngles[1];
+					outputAngles[2]=180-(outputAngles[0]+outputAngles[1]);
+				} else if(a1a3) {
+					outputAngles[0]=inputAngles[0];
+					outputAngles[2]=inputAngles[2];
+					outputAngles[1]=180-(outputAngles[0]+outputAngles[2]);
+				} else if(a2a3) {
+					outputAngles[1]=inputAngles[1];
+					outputAngles[2]=inputAngles[2];
+					outputAngles[0]=180-(outputAngles[1]+outputAngles[2]);
+				}
+				a1=a2=a3=aA=true;
+			}//At least 2 Angles Case 
+			else if (aA) {
+				for(int i=0;i<inputAngles.length;i++) {
+					outputAngles[i]=inputAngles[i];
+				}
+			}//All Angles Case
+			if (aS) {
+				for(int i=0;i<inputSides.length;i++) {
+					outputSides[i]=inputSides[i];
+				}
+			}//All Sides Case
+			//Not so Easy Cases
+			//TODO Help.
+			//Updating Appropriate Bools
+			aA=a1&&a2&&a3; 
+			aS=s1&&s2&&s3;
+			solved=aA&&aS;
+			print(aA+" "+outputAngles[0]+" "+outputAngles[1]+" "+outputAngles[2]);
+			print(aS+" "+outputSides[0]+" "+outputSides[1]+" "+outputSides[2]);
+			solved=true;
+		} while(!solved);
 	}//runLogic
 	private void reset() {
 		//Resets the window to where you can input a new triangle.
+		//TODO Fix this.
 		logicRan=false;
 		for(int i=0;i<inputs.length;i++) {
 			inputs[i].setText(DEFAULTINPUT);
@@ -150,6 +170,12 @@ public class TriangleSolver extends JFrame implements ActionListener, KeyListene
 		outputNums.sort(Comparator.naturalOrder());
 		double[] returnNums={outputNums.get(0),outputNums.get(1),outputNums.get(2)};
 		return returnNums;
+	}
+	private <T> void print(T inT){
+		System.out.println(inT);
+	}//print
+	private <T> void err(T inT) {
+		System.err.println(inT);
 	}
 	public static void main(String[]args) {
 		new TriangleSolver();
@@ -260,7 +286,7 @@ public class TriangleSolver extends JFrame implements ActionListener, KeyListene
 	@Override
 	public void keyReleased(KeyEvent e) {
 		if(e.getKeyCode()==KeyEvent.VK_ENTER&&logicRunnable()&&!logicRan) {
-				enter.doClick();
+			enter.doClick();
 		} else {
 			for(int i=0;i<inputs.length;i++) {
 				System.err.println("\""+inputs[i].getText()+"\"");
