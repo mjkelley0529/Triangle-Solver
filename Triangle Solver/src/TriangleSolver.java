@@ -1,4 +1,6 @@
+import java.awt.Dimension;
 import java.awt.GridLayout;
+import java.awt.Toolkit;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.KeyEvent;
@@ -29,8 +31,9 @@ public class TriangleSolver extends JFrame implements ActionListener, KeyListene
 	//Functional Methods
 	TriangleSolver(){
 		//Sets up the frame and layout of how the GUI looks.
+		Dimension screenSize=Toolkit.getDefaultToolkit().getScreenSize();
 		setSize(frameW,frameH);
-		setLocation((1920-frameW)/2,(1080-frameH)/2);
+		setLocation(((int)screenSize.getWidth()-frameW)/2,((int)screenSize.getHeight()-frameH)/2); //Sets the frame to appear centered in the screen.
 		setTitle(TITLE+", "+VERSIONID);
 		setResizable(false);
 		setDefaultCloseOperation(EXIT_ON_CLOSE);
