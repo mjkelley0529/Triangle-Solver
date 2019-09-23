@@ -17,7 +17,7 @@ public class TriangleSolver extends JFrame implements ActionListener, KeyListene
 	//Static Variables
 	private static final long serialVersionUID = -4198600644269193361L;
 	private static final int frameH=400, frameW=600;
-	private static final String displayString[]= {"Side A=", "Angle A=", "Side B=","Angle B=","Side C=","Angle C="}, 
+	private static final String displayString[]= {"Shortest\nSide=", "Smallest\nAngle=", "Middle\nSide=","Middle\nAngle=","Largest\nSide=","Largest\nAngle="}, 
 			DEFAULTINPUT="", TITLE="Triangle Solver", VERSIONID="Pre-Alpha 0.1";
 	//Swing/UI Variables
 	private JTextArea[] inputs = new JTextArea[6], displays=new JTextArea[6];
@@ -141,6 +141,18 @@ public class TriangleSolver extends JFrame implements ActionListener, KeyListene
 					outputSides[i]=inputSides[i];
 				}
 			}//All Sides Case
+			boolean right=false;
+			for(double i:inputAngles)
+				if(i==90)
+					right=true;
+			if(right) {
+				double hyp=0;
+				for(int i=0;i<inputAngles.length;i++) {
+					if(inputAngles[i]==90) {
+						hyp=inputSides[i];
+					}
+				}
+			}
 			//Not so Easy Cases
 			//TODO Help.
 			//Updating Appropriate Bools
@@ -184,7 +196,6 @@ public class TriangleSolver extends JFrame implements ActionListener, KeyListene
 	//Variable Methods
 	private boolean intCheck(char checkChar, boolean isString) {
 		//Checks a char to see if its a valid integer.
-		System.err.println(checkChar);
 		boolean returnValue=false;
 		switch(checkChar) {
 		case '1':
@@ -231,39 +242,76 @@ public class TriangleSolver extends JFrame implements ActionListener, KeyListene
 		boolean returnValue;
 		int trueCount=0;
 		for(boolean i:inputBool) {
-			System.err.println(i);
 			if(i)
 				trueCount++;
 		}
 		boolean A3=inputBool[1]&&inputBool[3]&&inputBool[5], S3=inputBool[0]&&inputBool[2]&&inputBool[4];
 		if(!A3&&!S3&&trueCount>=3) {
 			returnValue=true;
-			System.err.println("Case 1 True");
 		} else if (A3) {
 			double inputNums[]= {Double.parseDouble(inputs[1].getText()),Double.parseDouble(inputs[3].getText()),Double.parseDouble(inputs[5].getText())};
-			System.err.println("Case 2");
-			if(inputNums[0]+inputNums[1]+inputNums[2]==180) {
+			double sortedNums[]=sort(inputNums);
+			if(sortedNums[0]!=inputNums[0]||sortedNums[1]!=inputNums[1]||sortedNums[2]!=inputNums[2]) {
+				err("Angles are not in order");
+				returnValue=false;
+			} else if(inputNums[0]+inputNums[1]+inputNums[2]==180) {
 				returnValue=true;
-				System.err.println("Case 2 True");
 			} else {
 				returnValue=false;
-				System.err.println("Case 2 False: Angles do not equal 180 degrees.");
+				err("Angles do not equal 180 degrees.");
 			}
 		} else if (S3) {
-			System.err.println("Case 3");
 			double inputNums[]= {Double.parseDouble(inputs[0].getText()),Double.parseDouble(inputs[2].getText()),Double.parseDouble(inputs[4].getText())};
 			double sortedNums[]=sort(inputNums);
-			if(sortedNums[2]<=sortedNums[0]+sortedNums[1]) {
-				System.err.println("Case 3 True");
+			if(sortedNums[0]!=inputNums[0]||sortedNums[1]!=inputNums[1]||sortedNums[2]!=inputNums[2]) {
+				err("Sides are not in order");
+				returnValue=false;
+			} else if(inputNums[2]<=inputNums[0]+inputNums[1]) {
 				returnValue=true;
 			} else {
 				returnValue=false;
-				System.err.println("Case 3 False: Given side lengths cannot form a triange.");
+				err("Given side lengths cannot form a triangle.");
 			}
 		} else {
-			System.err.println("Case 1 False");
 			returnValue=false;
 		}
+		double[] inputSides=new double[3], inputAngles=new double[3];
+		for(int i=0, a=0;i<inputs.length;i+=2, a++) { //Gets Sides
+			if(inputBool[i])
+			inputSides[a]=Double.parseDouble(inputs[i].getText());
+			else
+				inputSides[a]=0;
+		}//for
+		for(int i=1, a=0;i<inputs.length;i+=2, a++) { //Gets Angles
+			if(inputBool[i])
+				inputAngles[a]=Double.parseDouble(inputs[i].getText());
+			else
+				inputAngles[a]=0;
+		}//for
+		if((inputSides[0]>inputSides[1]&&inputSides[0]!=0&&inputSides[1]!=0)
+				||(inputSides[0]>inputSides[2]&&inputSides[0]!=0&&inputSides[2]!=0)
+				||(inputSides[1]>inputSides[2]&&inputSides[1]!=0&&inputSides[2]!=0)) { //Makes sure Sides are in order
+			err("Sides are not in order.");
+			returnValue=false;
+		}//if
+		if((inputAngles[0]>inputAngles[1]&&inputAngles[0]!=0&&inputAngles[1]!=0)
+				||(inputAngles[0]>inputAngles[2]&&inputAngles[0]!=0&&inputAngles[2]!=0)
+				||(inputAngles[1]>inputAngles[2]&&inputAngles[1]!=0&&inputAngles[2]!=0)) { //Makes sure Angles are in order
+			err("Angles are not in order.");
+			returnValue=false;
+		}//if
+		for(double i:inputSides) { //Makes sure Sides are positive
+			if(i<0) {
+				err("Sides cannot be negative");
+				returnValue=false;
+			}
+		}//for
+		for(double i:inputAngles) { //Makes sure Angles are positive
+			if(i<0) {
+				err("Angles cannot be negative");
+				returnValue=false;
+			}
+		}//for
 		return returnValue;
 	}//logicRunnable
 
@@ -289,7 +337,6 @@ public class TriangleSolver extends JFrame implements ActionListener, KeyListene
 			enter.doClick();
 		} else {
 			for(int i=0;i<inputs.length;i++) {
-				System.err.println("\""+inputs[i].getText()+"\"");
 				inputBool[i]=intCheck(inputs[i].getText().toLowerCase());
 			}//for
 		}//if
